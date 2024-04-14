@@ -83,8 +83,9 @@ func createTasks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	_, ok := tasks[task.ID]
-	if !ok {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if ok {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Такая задача уже суещствует"))
 		return
 	}
 	tasks[task.ID] = task
@@ -96,7 +97,7 @@ func deleteTask(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	_, ok := tasks[id]
 	if !ok {
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusBadRequest)
 	}
 	delete(tasks, id)
 	w.WriteHeader(http.StatusOK)
